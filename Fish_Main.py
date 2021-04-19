@@ -18,6 +18,7 @@ async def create_db_pool():
 
 
 async def date_checker():
+    print("datechecker startet")
     channel = bot.get_channel(int(Secret.Main_channel))
     date = datetime.datetime.now()
     while True:
@@ -59,7 +60,7 @@ async def date_checker():
 # todo rollenvergabe, birthdaybot, twitchankündigungen
 
 @bot.event
-def on_ready():
+async def on_ready():
     print(f"***********\nloggt in as:\n{bot.user.name}\n***********")
     for cog in cogs:
         try:
@@ -67,10 +68,11 @@ def on_ready():
         except:
             pass
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="nach dem Server"))
+    await date_checker()
 
 
-@bot.commands(name="Modul")
-async def module(ctx, arg=None, extension=None):
+@bot.command(name="modul")
+async def modul(ctx, arg=None, extension=None):
     if arg == "load":
         bot.load_extension(f"Module.{extension}")
         await ctx.author.send(f'das Modul:"{extension}" wurde gestartet')
@@ -95,7 +97,6 @@ async def module(ctx, arg=None, extension=None):
         embed.add_field(name="Voice", value="Ein Modul für temporäre Voicechannel", inline=False)
         await ctx.author.send(embed=embed)
 
-await date_checker()
 bot.loop.run_until_complete(create_db_pool())
 Token = Secret.Token
 bot.run(Token)
